@@ -1,6 +1,7 @@
 import { clamp, Rect2D, normalizeVector2D } from "../lib/Utils.js";
 import { config } from "../config.js";
 import { Collider } from "./Collider.js";
+import { signal } from "../lib/SignalEmitter.js";
 
 export class Ball
 {
@@ -8,6 +9,7 @@ export class Ball
         this.update = this.update.bind(this);
         this.draw = this.draw.bind(this);
         this.onCollision = this.onCollision.bind(this);
+        this.reset = this.reset.bind(this);
 
         this._name = "ball";
         this._rect = new Rect2D(rect.x, rect.y, rect.width, rect.height);
@@ -41,18 +43,26 @@ export class Ball
             this._multiplier += (this._multiplier > 3) ? 0 : 0.1;
 
             this._rect.x = id === 1 ? coords.x2 : coords.x1 - rect.width;
-
-            console.group("PlayerCollision");
-            console.log("id:", id);
-            console.log("rect:", this._rect);
-            console.log("coords:", coords);
-            console.groupEnd();
         }
         else if (name === "boundary") {
             const deviation = Math.floor(Math.random() * 200 - 100) / 1000;
             this.y = this.y > 0 ? -Math.abs(this.y) : Math.abs(this.y);
             this.y += deviation;
         }
+        else if (name === "score") {
+            const playerID = entity.parent.side === "left" ? 2 : 1;
+            signal.emit("score", playerID);
+        }
+    }
+
+    reset() {
+        const r = this._rect;
+        const ctx = this._canvas;
+        
+        r.x = (ctx.width / 2) - (config.ball.width / 2);
+        r.y = (ctx.height / 2) - (config.ball.height / 2);
+        this._multiplier = 1;
+        this.setInitialTrajectory();
     }
 
     get name() {
@@ -101,6 +111,5 @@ export class Ball
         );
 
         this._collider.update();
-        this.draw();
     }
 }

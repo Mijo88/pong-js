@@ -89,8 +89,5 @@ export default class Player
             config.y_margin,
             ctx.height - height - config.y_margin,
         )
-
-        //this._collider.update();
-        this.draw();
     }
 }

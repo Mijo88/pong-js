@@ -15,6 +15,8 @@ export class GameController
         this.player = this.player.bind(this);
         this.update = this.update.bind(this);
         this.draw = this.draw.bind(this);
+        this.onSignalScore = this.onSignalScore.bind(this);
+        this.onKeyDown = this.onKeyDown.bind(this);
 
         this._state = { status: 1 };
         this._canvas = new Canvas(1024, 512, {
@@ -33,7 +35,9 @@ export class GameController
         );
 
         this.createPlayers(this._canvas);
-        signal.listen('tick', this.update);
+        signal.listen("tick", this.update);
+        signal.listen("score", this.onSignalScore);
+        signal.listen("keydown", this.onKeyDown);
         requestAnimationFrameLoop.tick();
     }
 
@@ -50,21 +54,38 @@ export class GameController
     createBoundaries(ctx) {
         const top = {
             name: "boundary",
-            _rect: new Rect2D(0, 0, ctx.width, 10),
+            _rect: new Rect2D(0, 0, ctx.width, config.y_margin),
         } 
         const bottom = {
             name: "boundary",
-            _rect: new Rect2D(0, ctx.height - 10, ctx.width, 10),
-        } 
+            _rect: new Rect2D(0, ctx.height - config.y_margin, ctx.width, config.y_margin),
+        }
+        const left = {
+            name: "score",
+            side: "left",
+            _rect: new Rect2D(0, 0, config.x_margin-20, ctx.height),
+        }
+        const right = {
+            name: "score",
+            side: "right",
+            _rect: new Rect2D(ctx.width - (config.x_margin - 20), 0, config.x_margin - 20, ctx.height),
+        }
         top._collider = new Collider(top);
         bottom._collider = new Collider(bottom);
-        return [top, bottom];
+        left._collider = new Collider(left);
+        right._collider = new Collider(right);
+        return [top, bottom, left, right];
     }
 
     createPlayers(ctx) {
         const { x_margin, y_margin, paddle } = config;
 
-        let rect = new Rect2D(x_margin, y_margin, paddle.width, paddle.height);
+        let rect = new Rect2D(
+            x_margin, 
+            (ctx.height / 2) - (paddle.height / 2), 
+            paddle.width, 
+            paddle.height
+        );
         this._players.push(new Player(1, rect, this._canvas));
 
         rect.x = ctx.width - x_margin - paddle.width;
@@ -79,6 +100,30 @@ export class GameController
         return this._ball;
     }
 
+    getState(prop) {
+        return this._state[prop];
+    }
+
+    setState(newState) {
+        Object.keys(newState).forEach(key => {
+            const value = newState[key];
+            this._state[key] = value;
+        })
+    }
+
+    onSignalScore(value) {
+        this.setState({status: 0})
+        this.player(value)._score += 1;
+        this.draw(0);
+        this._ball.reset();
+    }
+
+    onKeyDown(key) {
+        if (key === "K_SPACE" && this.getState("status") === 0) {
+            this.setState({status: 1})
+        }
+    }
+
     draw(dt) {
         const ctx = this._canvas;
         ctx.clearAll();
@@ -86,11 +131,11 @@ export class GameController
         ctx.begin();
         ctx.fillStyle(config.componentColor);
         ctx.fillRect(this._line);
-        // update players
-        this.player(1).update(dt);
-        this.player(2).update(dt);
-        // draw the ball
-        this.ball.update(dt);
+
+        this.player(1).draw();
+        this.player(2).draw();
+
+        this._ball.draw();        
     }
 
     update(dt) {
@@ -99,6 +144,12 @@ export class GameController
             return;
         }
         else if (status === 1) {
+            // update players
+            this.player(1).update(dt);
+            this.player(2).update(dt);
+            // update the ball
+            this.ball.update(dt);
+            // draw
             this.draw(dt);
         }
     }
