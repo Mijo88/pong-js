@@ -23,7 +23,7 @@ export class GameController
             append: document.body,
             styles: config.canvasStyles,
         });
-        this._players = [];
+        this._players = this.createPlayers(this._canvas);
         this._ball = this.createBall(this._canvas);
         this._boundaries = this.createBoundaries(this._canvas);
 
@@ -34,7 +34,6 @@ export class GameController
             this._canvas.height - 40
         );
 
-        this.createPlayers(this._canvas);
         signal.listen("tick", this.update);
         signal.listen("score", this.onSignalScore);
         signal.listen("keydown", this.onKeyDown);
@@ -78,6 +77,7 @@ export class GameController
     }
 
     createPlayers(ctx) {
+        const arr = []
         const { x_margin, y_margin, paddle } = config;
 
         let rect = new Rect2D(
@@ -86,10 +86,11 @@ export class GameController
             paddle.width, 
             paddle.height
         );
-        this._players.push(new Player(1, rect, this._canvas));
+        arr.push(new Player(1, rect, this._canvas));
 
         rect.x = ctx.width - x_margin - paddle.width;
-        this._players.push(new Player(2, rect, this._canvas));
+        arr.push(new Player(2, rect, this._canvas));
+        return arr;
     }
 
     player(int) {
