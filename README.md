@@ -27,8 +27,8 @@ you want to interact with it.
 - Paddle Left: W (up) / S (down)
 - Paddle Right: Arrow Up (up) / Arrow Down (down)
 - Spacebar sets the ball's initial velocity, which starts a new round.
-- CTRL+Q stops the rAF loops that's used for frame updates, basically pausing
+- CTRL+Q stops the rAF loop that's used for frame updates, basically pausing
   the game (with no way to resume!). Basically a kill switch in case I'd end up
-  stuck in an infinite loop during development.
+  stuck in a process that would otherwise freeze or crash the whole browser.
 
 You can view the project at [pong-js](https://mijo88.github.io/pong-js/).
