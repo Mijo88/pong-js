@@ -19,7 +19,7 @@ At the time this readme is being added, the project was finished / dropped
 3 months prior. And much has been learned since!
 
 ## View the demo
-Since the page literally doesn't have anything but a canvas elements, there's
+Since the page literally doesn't have anything but a canvas element, there's
 no instructions or controls listed whatsoever, so I'll list them here in case
 you want to interact with it.
 
