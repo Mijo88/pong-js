@@ -31,4 +31,4 @@ you want to interact with it.
   the game (with no way to resume!). Basically a kill switch in case I'd end up
   stuck in an infinite loop during development.
 
-You can view the project at [pong-js](https://mijo88.github.io/slider-demo/).
+You can view the project at [pong-js](https://mijo88.github.io/pong-js/).
