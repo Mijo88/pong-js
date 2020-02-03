@@ -1,4 +1,4 @@
-## About
+## About test
 Wanted to play around with canvas for a bit and thought making the basic
 pong game loop using only a canvas element could be a fun little project.
 
